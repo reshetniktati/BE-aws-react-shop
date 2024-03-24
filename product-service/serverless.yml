@@ -25,6 +25,8 @@ provider:
   runtime: nodejs18.x
   stage: dev
   region: eu-west-1
+  httpApi:
+    cors: true
 
 # you can add statements to the Lambda function's IAM Role here
 #  iam:

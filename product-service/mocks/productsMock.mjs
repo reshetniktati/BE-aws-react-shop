@@ -16,14 +16,16 @@ export const generateBookMockData = (numBooks = 10) => {
   const books = [];
 
   for (let i = 0; i < numBooks; i++) {
-    const name = bookTitles[i];
+    const title = bookTitles[i];
     const id = i + 1;
     const price = (Math.random() * 20 + 10).toFixed(2); // Price between 10 to 30 dollars
+    const description = `description is about ${bookTitles[i]} book`;
 
     books.push({
-      name,
+      title,
       id,
       price,
+      description,
     });
   }
 
