@@ -19,7 +19,7 @@ export const getProductsList = async (event) => {
       const stock = stocks.find((stock) => stock.product_id === product.id);
       return {
         ...product,
-        stock: stock ? stock.count : 0, // Default to 0 if no stock info is found
+        count: stock ? stock.count : 0, // Default to 0 if no stock info is found
       };
     });
 

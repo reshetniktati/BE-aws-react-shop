@@ -34,7 +34,7 @@ export const getProductsById = async (event) => {
     // Consolidate product details with stock information
     const consolidatedProduct = {
       ...product,
-      stock: stock ? stock.count : 0, // Default stock count to 0 if no stock information is found
+      count: stock ? stock.count : 0, // Default stock count to 0 if no stock information is found
     };
 
     return {
