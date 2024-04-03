@@ -14,5 +14,8 @@
   },
   "jest": {
     "transform": {}
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
   }
 }
