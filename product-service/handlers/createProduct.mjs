@@ -1,18 +1,18 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-import { v4 as uuidv4 } from "uuid";
-const uuid = uuidv4();
+import { randomUUID } from "crypto";
 
 const ddbClient = new DynamoDBClient({ region: "eu-west-1" });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 export const createProduct = async (event) => {
   const { title, description, price, count } = JSON.parse(event.body);
+  const id = randomUUID();
 
   const productParams = {
     TableName: "Products",
     Item: {
-      id: uuid(),
+      id,
       title,
       description,
       price,
