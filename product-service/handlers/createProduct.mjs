@@ -29,29 +29,40 @@ export const createProduct = async (event) => {
 
   try {
     await docClient.send(new PutCommand(productParams));
-
-    await docClient.send(new PutCommand(stockParams));
-
-    return {
-      statusCode: 201,
-      headers: {
-        "Access-Control-Allow-Origin": "*", // Adjust this to match your front-end domain
-        "Access-Control-Allow-Credentials": true, // If your front-end needs to send cookies
-        // Include other headers as needed
-      },
-      body: JSON.stringify({
-        message: "Product created successfully",
-        productId: id,
-      }),
-    };
   } catch (error) {
-    console.error("Error creating product:", error);
+    console.error("Error adding product to ProductsTable:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message: "Failed to create product",
+        message: "Failed to add product to ProductsTable",
         error: error.toString(),
       }),
     };
   }
+
+  try {
+    await docClient.send(new PutCommand(stockParams));
+  } catch (error) {
+    console.error("Error adding stock info to StocksTable:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Failed to add stock information to StocksTable",
+        error: error.toString(),
+        productId: id,
+      }),
+    };
+  }
+
+  return {
+    statusCode: 201,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+    },
+    body: JSON.stringify({
+      message: "Product created successfully",
+      productId: id,
+    }),
+  };
 };
