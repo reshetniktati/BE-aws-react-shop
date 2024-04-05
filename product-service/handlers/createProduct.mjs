@@ -34,6 +34,11 @@ export const createProduct = async (event) => {
 
     return {
       statusCode: 201,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // Adjust this to match your front-end domain
+        "Access-Control-Allow-Credentials": true, // If your front-end needs to send cookies
+        // Include other headers as needed
+      },
       body: JSON.stringify({
         message: "Product created successfully",
         productId: id,
