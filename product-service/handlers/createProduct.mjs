@@ -5,9 +5,29 @@ import { randomUUID } from "crypto";
 const ddbClient = new DynamoDBClient({ region: "eu-west-1" });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
+const isValidProduct = (title, description, price, count) => {
+  if (!title || !description || !price || price <= 0 || count < 0) {
+    return false;
+  }
+  return true;
+};
+
 export const createProduct = async (event) => {
   const { title, description, price, count } = JSON.parse(event.body);
   const id = randomUUID();
+
+  if (!isValidProduct(title, description, price, count)) {
+    return {
+      statusCode: 400,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({
+        message: "Invalid product data",
+      }),
+    };
+  }
 
   const productParams = {
     TableName: "Products",
