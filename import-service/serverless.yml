@@ -48,11 +48,11 @@ provider:
   # you can define service wide environment variables here
   # environment:
 # you can add packaging information here
-#package:
-#  patterns:
-#    - '!exclude-me.js'
-#    - '!exclude-me-dir/**'
-#    - include-me.js
+package:
+  patterns:
+    #    - '!exclude-me.js'
+    #    - '!exclude-me-dir/**'
+    - ../node_modules/csv-parser/**
 #    - include-me-dir/**
 
 functions:
