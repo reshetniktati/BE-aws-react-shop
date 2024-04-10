@@ -6,6 +6,7 @@ const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 export const getProductsById = async (event) => {
   const productId = event.pathParameters.productId;
+  console.log("Product INFO GET ID", productId);
 
   const productParams = {
     TableName: "Products",

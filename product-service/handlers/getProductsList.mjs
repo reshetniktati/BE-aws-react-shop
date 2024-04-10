@@ -5,6 +5,7 @@ const ddbClient = new DynamoDBClient({ region: "eu-west-1" });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 export const getProductsList = async (event) => {
+  console.log("eventINFO", event);
   try {
     const productsCommand = new ScanCommand({ TableName: "Products" });
     const productsData = await docClient.send(productsCommand);
@@ -13,6 +14,8 @@ export const getProductsList = async (event) => {
     const stocksCommand = new ScanCommand({ TableName: "Stocks" });
     const stocksData = await docClient.send(stocksCommand);
     const stocks = stocksData.Items;
+
+    console.log("ProductsINFO GET all", products, stocks);
 
     // Consolidating products with their stock counts
     const consolidatedProducts = products.map((product) => {

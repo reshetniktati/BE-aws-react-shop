@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "deploy": "sls deploy"
+    "deploy": "sls deploy",
+    "create-product": "curl -X POST https://4wubb2g7mj.execute-api.eu-west-1.amazonaws.com/products -H \"Content-Type: application/json\" -d '{\"title\": \"New Product\", \"description\": \"This is a new product\", \"price\": 12, \"count\": 100}'"
   },
   "devDependencies": {
     "@babel/core": "^7.24.3",

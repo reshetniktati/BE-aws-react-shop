@@ -1,6 +1,6 @@
 # for creating a new book item using terminal command on testing tables:
 
-curl -X "PUT" -H "Content-Type: application/json" -d "{\"title\":\"A New Test Book\",\"description\":\"Description of the TEST book\",\"price\":20,\"count\":100}" https://4wubb2g7mj.execute-api.eu-west-1.amazonaws.com/products
+run npm create-product
 
 # for POST/GET a new book item using Postman:
 
