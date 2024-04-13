@@ -28,6 +28,18 @@ provider:
         - "s3:ListBucket"
       Resource: "arn:aws:s3:::import-product-bucket"
 
+    - Effect: "Allow"
+      Action:
+        - "sqs:ReceiveMessage"
+        - "sqs:DeleteMessage"
+        - "sqs:GetQueueAttributes"
+        - "sns:Publish"
+      Resource:
+        - Fn::GetAtt:
+            - "catalogItemsQueue"
+            - "Arn"
+        - Ref: "createProductTopic"
+
   #  iam:
   #    role:
   #      statements:
@@ -72,10 +84,6 @@ functions:
           rules:
             - prefix: uploaded/ # Trigger only for files in 'uploaded/' folder
           existing: true
-
-      # - s3:
-      #     bucket: photos
-      #     event: s3:ObjectRemoved:*
 
   # importFileParser:
   #   handler: handlers/importFileParser.importFileParser
@@ -124,12 +132,38 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+resources:
+  Resources:
+    catalogItemsQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "catalogItemsQueue"
+    createProductTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        TopicName: "createProductTopic"
+    firstEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn:
+          Ref: "createProductTopic"
+        Protocol: "email"
+        Endpoint: "reshetniktati@gmail.com"
+        FilterPolicy:
+          price:
+            - numeric:
+                ">=": 10
+    secondEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn:
+          Ref: "createProductTopic"
+        Protocol: "email"
+        Endpoint: "tinareshetnik@gmail.com"
+        FilterPolicy:
+          price:
+            - numeric:
+                "<": 10
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"

@@ -4,11 +4,13 @@ import {
   CopyObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 import csvParser from "csv-parser";
 import { promisify } from "util";
 import { pipeline, Writable } from "stream";
 
 const s3Client = new S3Client({ region: "eu-west-1" });
+const sqsClient = new SQSClient({ region: "eu-west-1" });
 const pipelineAsync = promisify(pipeline);
 
 async function moveFile(bucketName, objectKey, destinationKey) {
@@ -27,7 +29,15 @@ async function moveFile(bucketName, objectKey, destinationKey) {
   );
 }
 
-const processCsv = async (bucketName, objectKey) => {
+const sendRecordToSQS = async (record, queueUrl) => {
+  const params = {
+    MessageBody: JSON.stringify(record),
+    QueueUrl: queueUrl,
+  };
+  await sqsClient.send(new SendMessageCommand(params));
+};
+
+const processCsv = async (bucketName, objectKey, queueUrl) => {
   const getObjectParams = {
     Bucket: bucketName,
     Key: objectKey,
@@ -36,26 +46,32 @@ const processCsv = async (bucketName, objectKey) => {
   try {
     const data = await s3Client.send(new GetObjectCommand(getObjectParams));
 
-    await await pipelineAsync(
+    await pipelineAsync(
       data.Body,
       csvParser(),
       new Writable({
         objectMode: true,
-        write(chunk, encoding, callback) {
-          console.log(chunk);
-          callback();
+        write: async (chunk, encoding, callback) => {
+          try {
+            await sendRecordToSQS(chunk, queueUrl);
+            callback();
+          } catch (error) {
+            callback(error);
+          }
         },
       })
     );
 
     console.log(`Successfully processed ${objectKey}`);
   } catch (err) {
-    console.error("Error processing file", err);
+    console.error("Error processing file:", err);
     throw err;
   }
 };
 
 export const importFileParser = async (event) => {
+  const queueUrl = "YOUR_SQS_QUEUE_URL"; // Replace with your actual SQS Queue URL
+
   for (const record of event.Records) {
     const bucketName = record.s3.bucket.name;
     const objectKey = decodeURIComponent(
@@ -63,9 +79,7 @@ export const importFileParser = async (event) => {
     );
 
     try {
-      await processCsv(bucketName, objectKey);
-
-      console.log(`CSV file ${objectKey} has been processed`);
+      await processCsv(bucketName, objectKey, queueUrl);
 
       const destinationKey = objectKey.replace("uploaded/", "parsed/");
       await moveFile(bucketName, objectKey, destinationKey);

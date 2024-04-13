@@ -21,22 +21,16 @@ provider:
       Action:
         - "dynamodb:*"
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
-#  iam:
-#    role:
-#      statements:
-#        - Effect: "Allow"
-#          Action:
-#            - "s3:ListBucket"
-#          Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#        - Effect: "Allow"
-#          Action:
-#            - "s3:PutObject"
-#          Resource:
-#            Fn::Join:
-#              - ""
-#              - - "arn:aws:s3:::"
-#                - "Ref" : "ServerlessDeploymentBucket"
-#                - "/*"
+
+    - Effect: "Allow"
+      Action:
+        - "sqs:ReceiveMessage"
+        - "sqs:DeleteMessage"
+        - "sqs:GetQueueAttributes"
+      Resource:
+        - Fn::GetAtt:
+            - "catalogItemsQueue"
+            - "Arn"
 
 # you can define service wide environment variables here
 #  environment:
@@ -68,6 +62,17 @@ functions:
       - httpApi:
           path: /products
           method: post
+
+  catalogBatchProcess:
+    handler: handlers/catalogBatchProcess.catalogBatchProcess
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - "catalogItemsQueue"
+              - "Arn"
+          batchSize: 5
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -138,12 +143,11 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+
+    catalogItemsQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "catalogItemsQueue"
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
