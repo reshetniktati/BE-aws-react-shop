@@ -14,6 +14,7 @@ const isValidProduct = (title, description, price, count) => {
 
 export const createProduct = async (event) => {
   const { title, description, price, count } = JSON.parse(event.body);
+  console.log("ProductINFO", title, description, price, count); // info about product to be created
   const id = randomUUID();
 
   if (!isValidProduct(title, description, price, count)) {
