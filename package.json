@@ -1,0 +1,25 @@
+{
+  "name": "my-book-store",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "deploy": "sls deploy",
+    "create-product": "curl -X POST https://4wubb2g7mj.execute-api.eu-west-1.amazonaws.com/products -H \"Content-Type: application/json\" -d '{\"title\": \"New Product\", \"description\": \"This is a new product\", \"price\": 12, \"count\": 100}'",
+    "populate-db": "node ./product-service/populateDynamoDB.mjs"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "transform": {}
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.552.0",
+    "@aws-sdk/lib-dynamodb": "^3.552.0",
+    "uuid": "^9.0.1"
+  }
+}
