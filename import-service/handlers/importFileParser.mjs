@@ -34,6 +34,7 @@ const sendRecordToSQS = async (record, queueUrl) => {
     MessageBody: JSON.stringify(record),
     QueueUrl: queueUrl,
   };
+  console.log("paramsImproPars", params);
   await sqsClient.send(new SendMessageCommand(params));
 };
 
@@ -70,7 +71,8 @@ const processCsv = async (bucketName, objectKey, queueUrl) => {
 };
 
 export const importFileParser = async (event) => {
-  const queueUrl = "YOUR_SQS_QUEUE_URL"; // Replace with your actual SQS Queue URL
+  const queueUrl =
+    "https://sqs.eu-west-1.amazonaws.com/533267006565/catalogItemsQueue";
 
   for (const record of event.Records) {
     const bucketName = record.s3.bucket.name;

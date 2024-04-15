@@ -27,6 +27,7 @@ provider:
         - "sqs:ReceiveMessage"
         - "sqs:DeleteMessage"
         - "sqs:GetQueueAttributes"
+        - "sqs:SendMessage"
       Resource:
         - Fn::GetAtt:
             - "catalogItemsQueue"
@@ -148,6 +149,33 @@ resources:
       Type: "AWS::SQS::Queue"
       Properties:
         QueueName: "catalogItemsQueue"
+
+    createProductTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        TopicName: "createProductTopic"
+
+    firstEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn:
+          Ref: "createProductTopic"
+        Protocol: "email"
+        Endpoint: "reshetniktati@gmail.com"
+        FilterPolicy:
+          price:
+            - ">=100"
+
+    secondEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn:
+          Ref: "createProductTopic"
+        Protocol: "email"
+        Endpoint: "tinareshetnik@gmail.com"
+        FilterPolicy:
+          price:
+            - "<100"
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"

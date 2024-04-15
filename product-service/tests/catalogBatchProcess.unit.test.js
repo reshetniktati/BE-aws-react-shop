@@ -1,6 +1,6 @@
-const AWS = require("aws-sdk");
-const AWSMock = require("aws-sdk-mock");
-const { catalogBatchProcess } = require("./handler");
+import AWS from "aws-sdk";
+import AWSMock from "aws-sdk-mock";
+import { catalogBatchProcess } from "./handler.mjs";
 
 AWSMock.setSDKInstance(AWS);
 
@@ -9,12 +9,10 @@ describe("catalogBatchProcess Lambda Function", () => {
     AWSMock.mock("SNS", "publish", (params, callback) => {
       callback(null, { MessageId: "12345" });
     });
-    // Mock other AWS services like DynamoDB if needed
   });
 
   afterAll(() => {
     AWSMock.restore("SNS");
-    // Restore other AWS services if they were mocked
   });
 
   it("should process products and publish messages to SNS", async () => {
@@ -26,8 +24,6 @@ describe("catalogBatchProcess Lambda Function", () => {
     };
 
     await catalogBatchProcess(event);
-
-    // Assertions to ensure that SNS publish was called
     const publishCalls = AWSMock.mocked("SNS", "publish").mock.calls;
     expect(publishCalls.length).toBe(2);
     expect(publishCalls[0][0].Message).toContain("Product 1");

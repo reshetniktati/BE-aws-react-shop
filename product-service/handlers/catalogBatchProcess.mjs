@@ -1,14 +1,14 @@
-// Import AWS SDK for JavaScript v3 modules
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 
-// Initialize SNS Client
-const snsClient = new SNSClient({ region: "us-east-1" });
+const snsClient = new SNSClient({ region: "eu-west-1" });
 
 export async function catalogBatchProcess(event) {
+  console.log("eventINFO", event);
   try {
     for (const { body } of event.Records) {
       const product = JSON.parse(body);
       const message = `New product created: ${JSON.stringify(product)}`;
+      console.log(`New product created: ${JSON.stringify(product)}`);
 
       const params = {
         Message: message,
