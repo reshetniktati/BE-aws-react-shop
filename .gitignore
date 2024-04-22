@@ -6,3 +6,4 @@
 .serverless
 
 .env
+.package-lock.json
