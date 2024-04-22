@@ -34,7 +34,7 @@ const sendRecordToSQS = async (record, queueUrl) => {
     MessageBody: JSON.stringify(record),
     QueueUrl: queueUrl,
   };
-  console.log("paramsImproPars", params);
+  console.log("paramsImpportParsMessage", params);
   await sqsClient.send(new SendMessageCommand(params));
 };
 
@@ -88,6 +88,7 @@ export const importFileParser = async (event) => {
       console.log(`File moved from ${objectKey} to ${destinationKey}`);
     } catch (error) {
       console.error("Error processing/moving file:", error);
+      console.log(`Bucket: ${bucketName}, Key: ${objectKey}`);
       throw error;
     }
   }
